@@ -436,8 +436,14 @@ func typeinit() {
 	Types[TPTR32] = typ(TPTR32)
 	dowidth(Types[TPTR32])
 
+	Types[TREF32] = typ(TREF32)
+	dowidth(Types[TREF32])
+
 	Types[TPTR64] = typ(TPTR64)
 	dowidth(Types[TPTR64])
+
+	Types[TREF64] = typ(TREF64)
+	dowidth(Types[TREF64])
 
 	t := typ(TUNSAFEPTR)
 	Types[TUNSAFEPTR] = t
@@ -447,8 +453,10 @@ func typeinit() {
 	dowidth(Types[TUNSAFEPTR])
 
 	Tptr = TPTR32
+	Tref = TREF32
 	if Widthptr == 8 {
 		Tptr = TPTR64
+		Tref = TREF64
 	}
 
 	for i := TINT8; i <= TUINT64; i++ {
@@ -465,7 +473,9 @@ func typeinit() {
 	Iscomplex[TCOMPLEX128] = true
 
 	Isptr[TPTR32] = true
+	Isptr[TREF32] = true
 	Isptr[TPTR64] = true
+	Isptr[TREF64] = true
 
 	isforw[TFORW] = true
 
@@ -529,7 +539,9 @@ func typeinit() {
 	okforlen[TSTRING] = true
 
 	okforeq[TPTR32] = true
+	okforeq[TREF32] = true
 	okforeq[TPTR64] = true
+	okforeq[TREF64] = true
 	okforeq[TUNSAFEPTR] = true
 	okforeq[TINTER] = true
 	okforeq[TCHAN] = true

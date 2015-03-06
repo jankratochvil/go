@@ -212,6 +212,7 @@ const (
 	DW_ABRV_IFACETYPE
 	DW_ABRV_MAPTYPE
 	DW_ABRV_PTRTYPE
+	DW_ABRV_REFTYPE
 	DW_ABRV_BARE_PTRTYPE // only for void*, no DW_AT_type attr to please gdb 6.
 	DW_ABRV_SLICETYPE
 	DW_ABRV_STRINGTYPE
@@ -510,6 +511,21 @@ var abbrevs = [DW_NABRV]struct {
 		DW_CHILDREN_no,
 		[30]DWAttrForm{
 			DWAttrForm{DW_AT_name, DW_FORM_string},
+			DWAttrForm{DW_AT_type, DW_FORM_ref_addr},
+			DWAttrForm{DW_AT_go_kind, DW_FORM_data1},
+			DWAttrForm{0, 0},
+		},
+	},
+
+	/* REFTYPE */
+	struct {
+		tag      uint8
+		children uint8
+		attr     [30]DWAttrForm
+	}{
+		DW_TAG_reference_type,
+		DW_CHILDREN_no,
+		[30]DWAttrForm{
 			DWAttrForm{DW_AT_type, DW_FORM_ref_addr},
 			DWAttrForm{DW_AT_go_kind, DW_FORM_data1},
 			DWAttrForm{0, 0},
@@ -1210,6 +1226,12 @@ func defgotype(gotype *LSym) *DWDie {
 
 	case obj.KindPtr:
 		die = newdie(&dwtypes, DW_ABRV_PTRTYPE, name)
+		dotypedef(&dwtypes, name, die)
+		s := decodetype_ptrelem(gotype)
+		newrefattr(die, DW_AT_type, defgotype(s))
+
+	case obj.KindRef:
+		die = newdie(&dwtypes, DW_ABRV_REFTYPE, name)
 		dotypedef(&dwtypes, name, die)
 		s := decodetype_ptrelem(gotype)
 		newrefattr(die, DW_AT_type, defgotype(s))

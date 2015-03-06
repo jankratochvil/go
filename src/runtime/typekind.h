@@ -32,6 +32,7 @@ enum {
 	KindString,
 	KindStruct,
 	KindUnsafePointer,
+	KindRef,
 
 	KindDirectIface = 1 << 5,
 	KindGCProg      = 1 << 6, // Type.gc points to GC program

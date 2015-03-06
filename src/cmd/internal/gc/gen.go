@@ -82,8 +82,8 @@ func addrescapes(n *Node) {
 			oldfn := Curfn
 
 			Curfn = n.Curfn
-			n.Heapaddr = temp(Ptrto(n.Type))
-			buf := fmt.Sprintf("&%v", Sconv(n.Sym, 0))
+			n.Heapaddr = temp(Refto(n.Type))
+			buf := fmt.Sprintf("%v", Sconv(n.Sym, 0))
 			n.Heapaddr.Sym = Lookup(buf)
 			n.Heapaddr.Orig.Sym = n.Heapaddr.Sym
 			n.Esc = EscHeap

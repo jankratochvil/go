@@ -63,7 +63,9 @@ var _typekind = []string{
 	TBOOL:       "bool",
 	TSTRING:     "string",
 	TPTR32:      "pointer",
+	TREF32:      "reference",
 	TPTR64:      "pointer",
+	TREF64:      "reference",
 	TUNSAFEPTR:  "unsafe.Pointer",
 	TSTRUCT:     "struct",
 	TINTER:      "interface",
@@ -2468,7 +2470,7 @@ func looktypedot(n *Node, t *Type, dostrcmp int) bool {
 }
 
 func derefall(t *Type) *Type {
-	for t != nil && int(t.Etype) == Tptr {
+	for t != nil && (int(t.Etype) == Tptr || int(t.Etype) == Tref) {
 		t = t.Type
 	}
 	return t
@@ -2521,20 +2523,20 @@ func lookdot(n *Node, t *Type, dostrcmp int) bool {
 		dowidth(tt)
 		rcvr := getthisx(f2.Type).Type.Type
 		if !Eqtype(rcvr, tt) {
-			if int(rcvr.Etype) == Tptr && Eqtype(rcvr.Type, tt) {
+			if (int(rcvr.Etype) == Tptr || int(rcvr.Etype) == Tref) && Eqtype(rcvr.Type, tt) {
 				checklvalue(n.Left, "call pointer method on")
 				n.Left = Nod(OADDR, n.Left, nil)
 				n.Left.Implicit = 1
 				typecheck(&n.Left, Etype|Erv)
-			} else if int(tt.Etype) == Tptr && int(rcvr.Etype) != Tptr && Eqtype(tt.Type, rcvr) {
+			} else if (int(tt.Etype) == Tptr || int(tt.Etype) == Tref) && (int(rcvr.Etype) != Tptr && int(rcvr.Etype) != Tref) && Eqtype(tt.Type, rcvr) {
 				n.Left = Nod(OIND, n.Left, nil)
 				n.Left.Implicit = 1
 				typecheck(&n.Left, Etype|Erv)
-			} else if int(tt.Etype) == Tptr && int(tt.Type.Etype) == Tptr && Eqtype(derefall(tt), derefall(rcvr)) {
+			} else if (int(tt.Etype) == Tptr || int(tt.Etype) == Tref) && (int(tt.Type.Etype) == Tptr || int(tt.Type.Etype) == Tref) && Eqtype(derefall(tt), derefall(rcvr)) {
 				Yyerror("calling method %v with receiver %v requires explicit dereference", Nconv(n.Right, 0), Nconv(n.Left, obj.FmtLong))
-				for int(tt.Etype) == Tptr {
+				for int(tt.Etype) == Tptr || int(tt.Etype) == Tref {
 					// Stop one level early for method with pointer receiver.
-					if int(rcvr.Etype) == Tptr && int(tt.Type.Etype) != Tptr {
+					if (int(rcvr.Etype) == Tptr || int(rcvr.Etype) == Tref) && (int(tt.Type.Etype) != Tptr && int(tt.Type.Etype) != Tref) {
 						break
 					}
 					n.Left = Nod(OIND, n.Left, nil)

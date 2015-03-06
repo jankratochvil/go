@@ -1615,6 +1615,17 @@ func Ptrto(t *Type) *Type {
 	return t1
 }
 
+func Refto(t *Type) *Type {
+	if Tref == 0 {
+		Fatal("refto: no tref")
+	}
+	t1 := typ(Tref)
+	t1.Type = t
+	t1.Width = int64(Widthptr)
+	t1.Align = uint8(Widthptr)
+	return t1
+}
+
 func frame(context int) {
 	var l *NodeList
 

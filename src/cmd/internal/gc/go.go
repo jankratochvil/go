@@ -549,6 +549,8 @@ var rawpkg *Pkg // fake package for raw symbol names
 
 var Tptr int // either TPTR32 or TPTR64
 
+var Tref int // either TREF32 or TREF64
+
 var myimportpath string
 
 var idirs *Idir
