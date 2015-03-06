@@ -179,7 +179,9 @@ func convlit1(np **Node, t *Type, explicit bool) {
 			}
 
 		case TPTR32,
+			TREF32,
 			TPTR64,
+			TREF64,
 			TINTER,
 			TMAP,
 			TCHAN,
@@ -1348,13 +1350,15 @@ func Smallintconst(n *Node) bool {
 			TINT32,
 			TUINT32,
 			TBOOL,
-			TPTR32:
+			TPTR32,
+			TREF32:
 			return true
 
 		case TIDEAL,
 			TINT64,
 			TUINT64,
-			TPTR64:
+			TPTR64,
+			TREF64:
 			if Mpcmpfixfix(n.Val.U.Xval, Minintval[TINT32]) < 0 || Mpcmpfixfix(n.Val.U.Xval, Maxintval[TINT32]) > 0 {
 				break
 			}

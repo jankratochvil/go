@@ -129,6 +129,7 @@ func regalloc(n *gc.Node, t *gc.Type, o *gc.Node) {
 		gc.TINT32,
 		gc.TUINT32,
 		gc.TPTR32,
+		gc.TREF32,
 		gc.TBOOL:
 		if o != nil && o.Op == gc.OREGISTER {
 			i = int(o.Val.U.Reg)
@@ -937,8 +938,14 @@ func optoas(op int, t *gc.Type) int {
 		/*	case CASE(OADDR, TPTR32):
 				a = ALEAL;
 				break;
+			case CASE(OADDR, TREF32):
+				a = ALEAL;
+				break;
 
 			case CASE(OADDR, TPTR64):
+				a = ALEAQ;
+				break;
+			case CASE(OADDR, TREF64):
 				a = ALEAQ;
 				break;
 		*/
@@ -953,7 +960,9 @@ func optoas(op int, t *gc.Type) int {
 		gc.OEQ<<16 | gc.TINT64,
 		gc.OEQ<<16 | gc.TUINT64,
 		gc.OEQ<<16 | gc.TPTR32,
+		gc.OEQ<<16 | gc.TREF32,
 		gc.OEQ<<16 | gc.TPTR64,
+		gc.OEQ<<16 | gc.TREF64,
 		gc.OEQ<<16 | gc.TFLOAT32,
 		gc.OEQ<<16 | gc.TFLOAT64:
 		a = arm.ABEQ
@@ -968,7 +977,9 @@ func optoas(op int, t *gc.Type) int {
 		gc.ONE<<16 | gc.TINT64,
 		gc.ONE<<16 | gc.TUINT64,
 		gc.ONE<<16 | gc.TPTR32,
+		gc.ONE<<16 | gc.TREF32,
 		gc.ONE<<16 | gc.TPTR64,
+		gc.ONE<<16 | gc.TREF64,
 		gc.ONE<<16 | gc.TFLOAT32,
 		gc.ONE<<16 | gc.TFLOAT64:
 		a = arm.ABNE
@@ -1036,7 +1047,8 @@ func optoas(op int, t *gc.Type) int {
 		gc.OCMP<<16 | gc.TUINT16,
 		gc.OCMP<<16 | gc.TINT32,
 		gc.OCMP<<16 | gc.TUINT32,
-		gc.OCMP<<16 | gc.TPTR32:
+		gc.OCMP<<16 | gc.TPTR32,
+		gc.OCMP<<16 | gc.TREF32:
 		a = arm.ACMP
 
 	case gc.OCMP<<16 | gc.TFLOAT32:
@@ -1062,7 +1074,8 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.OAS<<16 | gc.TINT32,
 		gc.OAS<<16 | gc.TUINT32,
-		gc.OAS<<16 | gc.TPTR32:
+		gc.OAS<<16 | gc.TPTR32,
+		gc.OAS<<16 | gc.TREF32:
 		a = arm.AMOVW
 
 	case gc.OAS<<16 | gc.TFLOAT32:
@@ -1077,7 +1090,8 @@ func optoas(op int, t *gc.Type) int {
 		gc.OADD<<16 | gc.TUINT16,
 		gc.OADD<<16 | gc.TINT32,
 		gc.OADD<<16 | gc.TUINT32,
-		gc.OADD<<16 | gc.TPTR32:
+		gc.OADD<<16 | gc.TPTR32,
+		gc.OADD<<16 | gc.TREF32:
 		a = arm.AADD
 
 	case gc.OADD<<16 | gc.TFLOAT32:
@@ -1092,7 +1106,8 @@ func optoas(op int, t *gc.Type) int {
 		gc.OSUB<<16 | gc.TUINT16,
 		gc.OSUB<<16 | gc.TINT32,
 		gc.OSUB<<16 | gc.TUINT32,
-		gc.OSUB<<16 | gc.TPTR32:
+		gc.OSUB<<16 | gc.TPTR32,
+		gc.OSUB<<16 | gc.TREF32:
 		a = arm.ASUB
 
 	case gc.OSUB<<16 | gc.TFLOAT32:
@@ -1107,7 +1122,8 @@ func optoas(op int, t *gc.Type) int {
 		gc.OMINUS<<16 | gc.TUINT16,
 		gc.OMINUS<<16 | gc.TINT32,
 		gc.OMINUS<<16 | gc.TUINT32,
-		gc.OMINUS<<16 | gc.TPTR32:
+		gc.OMINUS<<16 | gc.TPTR32,
+		gc.OMINUS<<16 | gc.TREF32:
 		a = arm.ARSB
 
 	case gc.OAND<<16 | gc.TINT8,
@@ -1116,7 +1132,8 @@ func optoas(op int, t *gc.Type) int {
 		gc.OAND<<16 | gc.TUINT16,
 		gc.OAND<<16 | gc.TINT32,
 		gc.OAND<<16 | gc.TUINT32,
-		gc.OAND<<16 | gc.TPTR32:
+		gc.OAND<<16 | gc.TPTR32,
+		gc.OAND<<16 | gc.TREF32:
 		a = arm.AAND
 
 	case gc.OOR<<16 | gc.TINT8,
@@ -1125,7 +1142,8 @@ func optoas(op int, t *gc.Type) int {
 		gc.OOR<<16 | gc.TUINT16,
 		gc.OOR<<16 | gc.TINT32,
 		gc.OOR<<16 | gc.TUINT32,
-		gc.OOR<<16 | gc.TPTR32:
+		gc.OOR<<16 | gc.TPTR32,
+		gc.OOR<<16 | gc.TREF32:
 		a = arm.AORR
 
 	case gc.OXOR<<16 | gc.TINT8,
@@ -1134,7 +1152,8 @@ func optoas(op int, t *gc.Type) int {
 		gc.OXOR<<16 | gc.TUINT16,
 		gc.OXOR<<16 | gc.TINT32,
 		gc.OXOR<<16 | gc.TUINT32,
-		gc.OXOR<<16 | gc.TPTR32:
+		gc.OXOR<<16 | gc.TPTR32,
+		gc.OXOR<<16 | gc.TREF32:
 		a = arm.AEOR
 
 	case gc.OLSH<<16 | gc.TINT8,
@@ -1143,13 +1162,15 @@ func optoas(op int, t *gc.Type) int {
 		gc.OLSH<<16 | gc.TUINT16,
 		gc.OLSH<<16 | gc.TINT32,
 		gc.OLSH<<16 | gc.TUINT32,
-		gc.OLSH<<16 | gc.TPTR32:
+		gc.OLSH<<16 | gc.TPTR32,
+		gc.OLSH<<16 | gc.TREF32:
 		a = arm.ASLL
 
 	case gc.ORSH<<16 | gc.TUINT8,
 		gc.ORSH<<16 | gc.TUINT16,
 		gc.ORSH<<16 | gc.TUINT32,
-		gc.ORSH<<16 | gc.TPTR32:
+		gc.ORSH<<16 | gc.TPTR32,
+		gc.ORSH<<16 | gc.TREF32:
 		a = arm.ASRL
 
 	case gc.ORSH<<16 | gc.TINT8,
@@ -1160,7 +1181,8 @@ func optoas(op int, t *gc.Type) int {
 	case gc.OMUL<<16 | gc.TUINT8,
 		gc.OMUL<<16 | gc.TUINT16,
 		gc.OMUL<<16 | gc.TUINT32,
-		gc.OMUL<<16 | gc.TPTR32:
+		gc.OMUL<<16 | gc.TPTR32,
+		gc.OMUL<<16 | gc.TREF32:
 		a = arm.AMULU
 
 	case gc.OMUL<<16 | gc.TINT8,
@@ -1177,7 +1199,8 @@ func optoas(op int, t *gc.Type) int {
 	case gc.ODIV<<16 | gc.TUINT8,
 		gc.ODIV<<16 | gc.TUINT16,
 		gc.ODIV<<16 | gc.TUINT32,
-		gc.ODIV<<16 | gc.TPTR32:
+		gc.ODIV<<16 | gc.TPTR32,
+		gc.ODIV<<16 | gc.TREF32:
 		a = arm.ADIVU
 
 	case gc.ODIV<<16 | gc.TINT8,
@@ -1188,7 +1211,8 @@ func optoas(op int, t *gc.Type) int {
 	case gc.OMOD<<16 | gc.TUINT8,
 		gc.OMOD<<16 | gc.TUINT16,
 		gc.OMOD<<16 | gc.TUINT32,
-		gc.OMOD<<16 | gc.TPTR32:
+		gc.OMOD<<16 | gc.TPTR32,
+		gc.OMOD<<16 | gc.TREF32:
 		a = arm.AMODU
 
 	case gc.OMOD<<16 | gc.TINT8,

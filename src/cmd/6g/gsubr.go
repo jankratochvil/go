@@ -142,7 +142,9 @@ func regalloc(n *gc.Node, t *gc.Type, o *gc.Node) {
 		gc.TINT64,
 		gc.TUINT64,
 		gc.TPTR32,
+		gc.TREF32,
 		gc.TPTR64,
+		gc.TREF64,
 		gc.TBOOL:
 		if o != nil && o.Op == gc.OREGISTER {
 			i = int(o.Val.U.Reg)
@@ -829,10 +831,12 @@ func optoas(op int, t *gc.Type) int {
 	default:
 		gc.Fatal("optoas: no entry %v-%v", gc.Oconv(int(op), 0), gc.Tconv(t, 0))
 
-	case gc.OADDR<<16 | gc.TPTR32:
+	case gc.OADDR<<16 | gc.TPTR32,
+		gc.OADDR<<16 | gc.TREF32:
 		a = x86.ALEAL
 
-	case gc.OADDR<<16 | gc.TPTR64:
+	case gc.OADDR<<16 | gc.TPTR64,
+		gc.OADDR<<16 | gc.TREF64:
 		a = x86.ALEAQ
 
 	case gc.OEQ<<16 | gc.TBOOL,
@@ -845,7 +849,9 @@ func optoas(op int, t *gc.Type) int {
 		gc.OEQ<<16 | gc.TINT64,
 		gc.OEQ<<16 | gc.TUINT64,
 		gc.OEQ<<16 | gc.TPTR32,
+		gc.OEQ<<16 | gc.TREF32,
 		gc.OEQ<<16 | gc.TPTR64,
+		gc.OEQ<<16 | gc.TREF64,
 		gc.OEQ<<16 | gc.TFLOAT32,
 		gc.OEQ<<16 | gc.TFLOAT64:
 		a = x86.AJEQ
@@ -860,7 +866,9 @@ func optoas(op int, t *gc.Type) int {
 		gc.ONE<<16 | gc.TINT64,
 		gc.ONE<<16 | gc.TUINT64,
 		gc.ONE<<16 | gc.TPTR32,
+		gc.ONE<<16 | gc.TREF32,
 		gc.ONE<<16 | gc.TPTR64,
+		gc.ONE<<16 | gc.TREF64,
 		gc.ONE<<16 | gc.TFLOAT32,
 		gc.ONE<<16 | gc.TFLOAT64:
 		a = x86.AJNE
@@ -928,12 +936,14 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.OCMP<<16 | gc.TINT32,
 		gc.OCMP<<16 | gc.TUINT32,
-		gc.OCMP<<16 | gc.TPTR32:
+		gc.OCMP<<16 | gc.TPTR32,
+		gc.OCMP<<16 | gc.TREF32:
 		a = x86.ACMPL
 
 	case gc.OCMP<<16 | gc.TINT64,
 		gc.OCMP<<16 | gc.TUINT64,
-		gc.OCMP<<16 | gc.TPTR64:
+		gc.OCMP<<16 | gc.TPTR64,
+		gc.OCMP<<16 | gc.TREF64:
 		a = x86.ACMPQ
 
 	case gc.OCMP<<16 | gc.TFLOAT32:
@@ -953,12 +963,14 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.OAS<<16 | gc.TINT32,
 		gc.OAS<<16 | gc.TUINT32,
-		gc.OAS<<16 | gc.TPTR32:
+		gc.OAS<<16 | gc.TPTR32,
+		gc.OAS<<16 | gc.TREF32:
 		a = x86.AMOVL
 
 	case gc.OAS<<16 | gc.TINT64,
 		gc.OAS<<16 | gc.TUINT64,
-		gc.OAS<<16 | gc.TPTR64:
+		gc.OAS<<16 | gc.TPTR64,
+		gc.OAS<<16 | gc.TREF64:
 		a = x86.AMOVQ
 
 	case gc.OAS<<16 | gc.TFLOAT32:
@@ -977,12 +989,14 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.OADD<<16 | gc.TINT32,
 		gc.OADD<<16 | gc.TUINT32,
-		gc.OADD<<16 | gc.TPTR32:
+		gc.OADD<<16 | gc.TPTR32,
+		gc.OADD<<16 | gc.TREF32:
 		a = x86.AADDL
 
 	case gc.OADD<<16 | gc.TINT64,
 		gc.OADD<<16 | gc.TUINT64,
-		gc.OADD<<16 | gc.TPTR64:
+		gc.OADD<<16 | gc.TPTR64,
+		gc.OADD<<16 | gc.TREF64:
 		a = x86.AADDQ
 
 	case gc.OADD<<16 | gc.TFLOAT32:
@@ -1001,12 +1015,14 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.OSUB<<16 | gc.TINT32,
 		gc.OSUB<<16 | gc.TUINT32,
-		gc.OSUB<<16 | gc.TPTR32:
+		gc.OSUB<<16 | gc.TPTR32,
+		gc.OSUB<<16 | gc.TREF32:
 		a = x86.ASUBL
 
 	case gc.OSUB<<16 | gc.TINT64,
 		gc.OSUB<<16 | gc.TUINT64,
-		gc.OSUB<<16 | gc.TPTR64:
+		gc.OSUB<<16 | gc.TPTR64,
+		gc.OSUB<<16 | gc.TREF64:
 		a = x86.ASUBQ
 
 	case gc.OSUB<<16 | gc.TFLOAT32:
@@ -1025,12 +1041,14 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.OINC<<16 | gc.TINT32,
 		gc.OINC<<16 | gc.TUINT32,
-		gc.OINC<<16 | gc.TPTR32:
+		gc.OINC<<16 | gc.TPTR32,
+		gc.OINC<<16 | gc.TREF32:
 		a = x86.AINCL
 
 	case gc.OINC<<16 | gc.TINT64,
 		gc.OINC<<16 | gc.TUINT64,
-		gc.OINC<<16 | gc.TPTR64:
+		gc.OINC<<16 | gc.TPTR64,
+		gc.OINC<<16 | gc.TREF64:
 		a = x86.AINCQ
 
 	case gc.ODEC<<16 | gc.TINT8,
@@ -1043,12 +1061,14 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.ODEC<<16 | gc.TINT32,
 		gc.ODEC<<16 | gc.TUINT32,
-		gc.ODEC<<16 | gc.TPTR32:
+		gc.ODEC<<16 | gc.TPTR32,
+		gc.ODEC<<16 | gc.TREF32:
 		a = x86.ADECL
 
 	case gc.ODEC<<16 | gc.TINT64,
 		gc.ODEC<<16 | gc.TUINT64,
-		gc.ODEC<<16 | gc.TPTR64:
+		gc.ODEC<<16 | gc.TPTR64,
+		gc.ODEC<<16 | gc.TREF64:
 		a = x86.ADECQ
 
 	case gc.OMINUS<<16 | gc.TINT8,
@@ -1061,12 +1081,14 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.OMINUS<<16 | gc.TINT32,
 		gc.OMINUS<<16 | gc.TUINT32,
-		gc.OMINUS<<16 | gc.TPTR32:
+		gc.OMINUS<<16 | gc.TPTR32,
+		gc.OMINUS<<16 | gc.TREF32:
 		a = x86.ANEGL
 
 	case gc.OMINUS<<16 | gc.TINT64,
 		gc.OMINUS<<16 | gc.TUINT64,
-		gc.OMINUS<<16 | gc.TPTR64:
+		gc.OMINUS<<16 | gc.TPTR64,
+		gc.OMINUS<<16 | gc.TREF64:
 		a = x86.ANEGQ
 
 	case gc.OAND<<16 | gc.TINT8,
@@ -1079,12 +1101,14 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.OAND<<16 | gc.TINT32,
 		gc.OAND<<16 | gc.TUINT32,
-		gc.OAND<<16 | gc.TPTR32:
+		gc.OAND<<16 | gc.TPTR32,
+		gc.OAND<<16 | gc.TREF32:
 		a = x86.AANDL
 
 	case gc.OAND<<16 | gc.TINT64,
 		gc.OAND<<16 | gc.TUINT64,
-		gc.OAND<<16 | gc.TPTR64:
+		gc.OAND<<16 | gc.TPTR64,
+		gc.OAND<<16 | gc.TREF64:
 		a = x86.AANDQ
 
 	case gc.OOR<<16 | gc.TINT8,
@@ -1097,12 +1121,14 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.OOR<<16 | gc.TINT32,
 		gc.OOR<<16 | gc.TUINT32,
-		gc.OOR<<16 | gc.TPTR32:
+		gc.OOR<<16 | gc.TPTR32,
+		gc.OOR<<16 | gc.TREF32:
 		a = x86.AORL
 
 	case gc.OOR<<16 | gc.TINT64,
 		gc.OOR<<16 | gc.TUINT64,
-		gc.OOR<<16 | gc.TPTR64:
+		gc.OOR<<16 | gc.TPTR64,
+		gc.OOR<<16 | gc.TREF64:
 		a = x86.AORQ
 
 	case gc.OXOR<<16 | gc.TINT8,
@@ -1115,12 +1141,14 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.OXOR<<16 | gc.TINT32,
 		gc.OXOR<<16 | gc.TUINT32,
-		gc.OXOR<<16 | gc.TPTR32:
+		gc.OXOR<<16 | gc.TPTR32,
+		gc.OXOR<<16 | gc.TREF32:
 		a = x86.AXORL
 
 	case gc.OXOR<<16 | gc.TINT64,
 		gc.OXOR<<16 | gc.TUINT64,
-		gc.OXOR<<16 | gc.TPTR64:
+		gc.OXOR<<16 | gc.TPTR64,
+		gc.OXOR<<16 | gc.TREF64:
 		a = x86.AXORQ
 
 	case gc.OLROT<<16 | gc.TINT8,
@@ -1133,12 +1161,14 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.OLROT<<16 | gc.TINT32,
 		gc.OLROT<<16 | gc.TUINT32,
-		gc.OLROT<<16 | gc.TPTR32:
+		gc.OLROT<<16 | gc.TPTR32,
+		gc.OLROT<<16 | gc.TREF32:
 		a = x86.AROLL
 
 	case gc.OLROT<<16 | gc.TINT64,
 		gc.OLROT<<16 | gc.TUINT64,
-		gc.OLROT<<16 | gc.TPTR64:
+		gc.OLROT<<16 | gc.TPTR64,
+		gc.OLROT<<16 | gc.TREF64:
 		a = x86.AROLQ
 
 	case gc.OLSH<<16 | gc.TINT8,
@@ -1151,12 +1181,14 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.OLSH<<16 | gc.TINT32,
 		gc.OLSH<<16 | gc.TUINT32,
-		gc.OLSH<<16 | gc.TPTR32:
+		gc.OLSH<<16 | gc.TPTR32,
+		gc.OLSH<<16 | gc.TREF32:
 		a = x86.ASHLL
 
 	case gc.OLSH<<16 | gc.TINT64,
 		gc.OLSH<<16 | gc.TUINT64,
-		gc.OLSH<<16 | gc.TPTR64:
+		gc.OLSH<<16 | gc.TPTR64,
+		gc.OLSH<<16 | gc.TREF64:
 		a = x86.ASHLQ
 
 	case gc.ORSH<<16 | gc.TUINT8:
@@ -1166,11 +1198,13 @@ func optoas(op int, t *gc.Type) int {
 		a = x86.ASHRW
 
 	case gc.ORSH<<16 | gc.TUINT32,
-		gc.ORSH<<16 | gc.TPTR32:
+		gc.ORSH<<16 | gc.TPTR32,
+		gc.ORSH<<16 | gc.TREF32:
 		a = x86.ASHRL
 
 	case gc.ORSH<<16 | gc.TUINT64,
-		gc.ORSH<<16 | gc.TPTR64:
+		gc.ORSH<<16 | gc.TPTR64,
+		gc.ORSH<<16 | gc.TREF64:
 		a = x86.ASHRQ
 
 	case gc.ORSH<<16 | gc.TINT8:
@@ -1214,13 +1248,15 @@ func optoas(op int, t *gc.Type) int {
 	case gc.OHMUL<<16 | gc.TINT32,
 		gc.OMUL<<16 | gc.TINT32,
 		gc.OMUL<<16 | gc.TUINT32,
-		gc.OMUL<<16 | gc.TPTR32:
+		gc.OMUL<<16 | gc.TPTR32,
+		gc.OMUL<<16 | gc.TREF32:
 		a = x86.AIMULL
 
 	case gc.OHMUL<<16 | gc.TINT64,
 		gc.OMUL<<16 | gc.TINT64,
 		gc.OMUL<<16 | gc.TUINT64,
-		gc.OMUL<<16 | gc.TPTR64:
+		gc.OMUL<<16 | gc.TPTR64,
+		gc.OMUL<<16 | gc.TREF64:
 		a = x86.AIMULQ
 
 	case gc.OHMUL<<16 | gc.TUINT8:
@@ -1230,11 +1266,13 @@ func optoas(op int, t *gc.Type) int {
 		a = x86.AMULW
 
 	case gc.OHMUL<<16 | gc.TUINT32,
-		gc.OHMUL<<16 | gc.TPTR32:
+		gc.OHMUL<<16 | gc.TPTR32,
+		gc.OHMUL<<16 | gc.TREF32:
 		a = x86.AMULL
 
 	case gc.OHMUL<<16 | gc.TUINT64,
-		gc.OHMUL<<16 | gc.TPTR64:
+		gc.OHMUL<<16 | gc.TPTR64,
+		gc.OHMUL<<16 | gc.TREF64:
 		a = x86.AMULQ
 
 	case gc.OMUL<<16 | gc.TFLOAT32:
@@ -1265,8 +1303,10 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.ODIV<<16 | gc.TUINT32,
 		gc.ODIV<<16 | gc.TPTR32,
+		gc.ODIV<<16 | gc.TREF32,
 		gc.OMOD<<16 | gc.TUINT32,
-		gc.OMOD<<16 | gc.TPTR32:
+		gc.OMOD<<16 | gc.TPTR32,
+		gc.OMOD<<16 | gc.TREF32:
 		a = x86.ADIVL
 
 	case gc.ODIV<<16 | gc.TINT64,
@@ -1275,8 +1315,10 @@ func optoas(op int, t *gc.Type) int {
 
 	case gc.ODIV<<16 | gc.TUINT64,
 		gc.ODIV<<16 | gc.TPTR64,
+		gc.ODIV<<16 | gc.TREF64,
 		gc.OMOD<<16 | gc.TUINT64,
-		gc.OMOD<<16 | gc.TPTR64:
+		gc.OMOD<<16 | gc.TPTR64,
+		gc.OMOD<<16 | gc.TREF64:
 		a = x86.ADIVQ
 
 	case gc.OEXTEND<<16 | gc.TINT16:

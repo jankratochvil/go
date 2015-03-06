@@ -352,7 +352,9 @@ func Clearslim(n *Node) {
 		z.Val.U.Fval = &zero
 
 	case TPTR32,
+		TREF32,
 		TPTR64,
+		TREF64,
 		TCHAN,
 		TMAP:
 		z.Val.Ctype = CTNIL

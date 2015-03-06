@@ -565,7 +565,9 @@ func allreg(b uint64, r *Rgn) uint64 {
 		TUINTPTR,
 		TBOOL,
 		TPTR32,
-		TPTR64:
+		TREF32,
+		TPTR64,
+		TREF64:
 		i := Thearch.BtoR(^b)
 		if i != 0 && r.cost > 0 {
 			r.regno = int16(i)

@@ -1518,7 +1518,9 @@ func gen_as_init(n *Node) bool {
 		TUINT,
 		TUINTPTR,
 		TPTR32,
+		TREF32,
 		TPTR64,
+		TREF64,
 		TFLOAT32,
 		TFLOAT64:
 		gdata(&nam, nr, int(nr.Type.Width))

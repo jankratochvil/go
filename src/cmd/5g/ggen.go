@@ -356,7 +356,7 @@ func cgen_call(n *gc.Node, proc int) {
  */
 func cgen_callret(n *gc.Node, res *gc.Node) {
 	t := n.Left.Type
-	if t.Etype == gc.TPTR32 || t.Etype == gc.TPTR64 {
+	if t.Etype == gc.TPTR32 || t.Etype == gc.TPTR64 || t.Etype == gc.TREF32 || t.Etype == gc.TREF64 {
 		t = t.Type
 	}
 

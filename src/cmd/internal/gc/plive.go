@@ -917,7 +917,9 @@ func twobitwalktype1(t *Type, xoffset *int64, bv Bvec) {
 		*xoffset += t.Width
 
 	case TPTR32,
+		TREF32,
 		TPTR64,
+		TREF64,
 		TUNSAFEPTR,
 		TFUNC,
 		TCHAN,

@@ -451,7 +451,9 @@ func algtype1(t *Type, bad **Type) int {
 		TUINTPTR,
 		TBOOL,
 		TPTR32,
+		TREF32,
 		TPTR64,
+		TREF64,
 		TCHAN,
 		TUNSAFEPTR:
 		return AMEM
@@ -1197,7 +1199,9 @@ func assignop(src *Type, dst *Type, why *string) int {
 			fallthrough
 
 		case TPTR32,
+			TREF32,
 			TPTR64,
+			TREF64,
 			TFUNC,
 			TMAP,
 			TCHAN,
@@ -1382,7 +1386,9 @@ loop:
 		return false
 
 	case TPTR32,
+		TREF32,
 		TPTR64,
+		TREF64,
 		TCHAN,
 		TARRAY:
 		stp = &st.Type
@@ -1437,7 +1443,8 @@ func Is64(t *Type) bool {
 	switch Simtype[t.Etype] {
 	case TINT64,
 		TUINT64,
-		TPTR64:
+		TPTR64,
+		TREF64:
 		return true
 	}
 
@@ -1462,13 +1469,15 @@ func Noconv(t1 *Type, t2 *Type) bool {
 
 	case TINT32,
 		TUINT32,
-		TPTR32:
-		return e2 == TINT32 || e2 == TUINT32 || e2 == TPTR32
+		TPTR32,
+		TREF32:
+		return e2 == TINT32 || e2 == TUINT32 || e2 == TPTR32 || e2 == TREF32
 
 	case TINT64,
 		TUINT64,
-		TPTR64:
-		return e2 == TINT64 || e2 == TUINT64 || e2 == TPTR64
+		TPTR64,
+		TREF64:
+		return e2 == TINT64 || e2 == TUINT64 || e2 == TPTR64 || e2 == TREF64
 
 	case TFLOAT32:
 		return e2 == TFLOAT32
@@ -1514,7 +1523,9 @@ func deep(t *Type) *Type {
 		nt.Copyany = 1
 
 	case TPTR32,
+		TREF32,
 		TPTR64,
+		TREF64,
 		TCHAN,
 		TARRAY:
 		nt = shallow(t)
@@ -3112,10 +3123,12 @@ func Simsimtype(t *Type) int {
 
 	et := int(Simtype[t.Etype])
 	switch et {
-	case TPTR32:
+	case TPTR32,
+		TREF32:
 		et = TUINT32
 
-	case TPTR64:
+	case TPTR64,
+		TREF64:
 		et = TUINT64
 
 	case TBOOL:
@@ -3571,7 +3584,9 @@ func checknil(x *Node, init **NodeList) {
 func isdirectiface(t *Type) bool {
 	switch t.Etype {
 	case TPTR32,
+		TREF32,
 		TPTR64,
+		TREF64,
 		TCHAN,
 		TMAP,
 		TFUNC,

@@ -2927,7 +2927,9 @@ func iscomptype(t *Type) bool {
 		return true
 
 	case TPTR32,
-		TPTR64:
+		TREF32,
+		TPTR64,
+		TREF64:
 		switch t.Type.Etype {
 		case TARRAY,
 			TSTRUCT,

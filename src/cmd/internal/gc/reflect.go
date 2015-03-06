@@ -654,7 +654,9 @@ func haspointers(t *Type) bool {
 
 	case TSTRING,
 		TPTR32,
+		TREF32,
 		TPTR64,
+		TREF64,
 		TUNSAFEPTR,
 		TINTER,
 		TCHAN,
@@ -927,7 +929,9 @@ func isreflexive(t *Type) bool {
 		TUINT64,
 		TUINTPTR,
 		TPTR32,
+		TREF32,
 		TPTR64,
+		TREF64,
 		TUNSAFEPTR,
 		TSTRING,
 		TCHAN:
@@ -1143,7 +1147,9 @@ ok:
 		ot = duint8(s, ot, uint8(bool2int(isreflexive(t.Down))))
 
 	case TPTR32,
-		TPTR64:
+		TREF32,
+		TPTR64,
+		TREF64:
 		if t.Type.Etype == TANY {
 			// ../../runtime/type.go:/UnsafePointerType
 			ot = dcommontype(s, ot, t)
@@ -1551,7 +1557,9 @@ func gengcprog1(g *ProgGen, t *Type, xoffset *int64) {
 		*xoffset += t.Width
 
 	case TPTR32,
+		TREF32,
 		TPTR64,
+		TREF64,
 		TUNSAFEPTR,
 		TFUNC,
 		TCHAN,

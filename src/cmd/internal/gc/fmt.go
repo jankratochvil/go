@@ -395,7 +395,9 @@ var etnames = []string{
 	TCOMPLEX128: "COMPLEX128",
 	TBOOL:       "BOOL",
 	TPTR32:      "PTR32",
+	TREF32:      "REF32",
 	TPTR64:      "PTR64",
+	TREF64:      "REF64",
 	TFUNC:       "FUNC",
 	TARRAY:      "ARRAY",
 	TSTRUCT:     "STRUCT",
@@ -557,7 +559,9 @@ func typefmt(t *Type, flag int) string {
 
 	switch t.Etype {
 	case TPTR32,
-		TPTR64:
+		TREF32,
+		TPTR64,
+		TREF64:
 		if fmtmode == FTypeId && (flag&obj.FmtShort != 0 /*untyped*/) {
 			fp += fmt.Sprintf("*%v", Tconv(t.Type, obj.FmtShort))
 			return fp
