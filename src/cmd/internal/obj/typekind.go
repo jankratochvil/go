@@ -38,6 +38,7 @@ const (
 	KindString
 	KindStruct
 	KindUnsafePointer
+	KindRef
 	KindDirectIface = 1 << 5
 	KindGCProg      = 1 << 6
 	KindNoPointers  = 1 << 7
