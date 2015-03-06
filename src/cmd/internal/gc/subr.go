@@ -972,7 +972,7 @@ func eqtype1(t1 *Type, t2 *Type, assumed_equal *TypePairList) bool {
 	if t1 == t2 {
 		return true
 	}
-	if t1 == nil || t2 == nil || t1.Etype != t2.Etype {
+	if t1 == nil || t2 == nil || (t1.Etype != t2.Etype && (int(t1.Etype) != Tptr || int(t2.Etype) != Tref) && (int(t1.Etype) != Tref || int(t2.Etype) != Tptr)) {
 		return false
 	}
 	if t1.Sym != nil || t2.Sym != nil {
