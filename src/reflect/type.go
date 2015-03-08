@@ -238,6 +238,7 @@ const (
 	String
 	Struct
 	UnsafePointer
+	Ref
 )
 
 // rtype is the common implementation of most values.
@@ -439,6 +440,7 @@ var kindNames = []string{
 	String:        "string",
 	Struct:        "struct",
 	UnsafePointer: "unsafe.Pointer",
+	Ref:           "ref",
 }
 
 func (t *uncommonType) uncommon() *uncommonType {
@@ -588,7 +590,8 @@ func (t *rtype) Elem() Type {
 	case Map:
 		tt := (*mapType)(unsafe.Pointer(t))
 		return toType(tt.elem)
-	case Ptr:
+	case Ptr,
+		Ref:
 		tt := (*ptrType)(unsafe.Pointer(t))
 		return toType(tt.elem)
 	case Slice:
@@ -826,7 +829,7 @@ func (t *structType) Field(i int) (f StructField) {
 		f.Name = *p.name
 	} else {
 		t := f.Type
-		if t.Kind() == Ptr {
+		if t.Kind() == Ptr || t.Kind() == Ref {
 			t = t.Elem()
 		}
 		f.Name = t.Name()
@@ -860,7 +863,7 @@ func (t *structType) FieldByIndex(index []int) (f StructField) {
 	for i, x := range index {
 		if i > 0 {
 			ft := f.Type
-			if ft.Kind() == Ptr && ft.Elem().Kind() == Struct {
+			if (ft.Kind() == Ptr || ft.Kind() == Ref) && ft.Elem().Kind() == Struct {
 				ft = ft.Elem()
 			}
 			f.Type = ft
@@ -934,7 +937,7 @@ func (t *structType) FieldByNameFunc(match func(string) bool) (result StructFiel
 					// Anonymous field of type T or *T.
 					// Name taken from type.
 					ntyp = f.typ
-					if ntyp.Kind() == Ptr {
+					if ntyp.Kind() == Ptr || ntyp.Kind() == Ref {
 						ntyp = ntyp.Elem().common()
 					}
 					fname = ntyp.Name()
@@ -1260,7 +1263,7 @@ func haveIdenticalUnderlyingType(T, V *rtype) bool {
 	case Map:
 		return T.Key() == V.Key() && T.Elem() == V.Elem()
 
-	case Ptr, Slice:
+	case Ptr, Ref, Slice:
 		return T.Elem() == V.Elem()
 
 	case Struct:
@@ -1511,7 +1514,7 @@ func MapOf(key, elem Type) Type {
 // That is, x == x for all values x of type t.
 func isReflexive(t *rtype) bool {
 	switch t.Kind() {
-	case Bool, Int, Int8, Int16, Int32, Int64, Uint, Uint8, Uint16, Uint32, Uint64, Uintptr, Chan, Ptr, String, UnsafePointer:
+	case Bool, Int, Int8, Int16, Int32, Int64, Uint, Uint8, Uint16, Uint32, Uint64, Uintptr, Chan, Ptr, Ref, String, UnsafePointer:
 		return true
 	case Float32, Float64, Complex64, Complex128, Interface:
 		return false
@@ -1558,7 +1561,7 @@ func (gc *gcProg) appendProg(t *rtype) {
 	switch t.Kind() {
 	default:
 		panic("reflect: non-pointer type marked as having pointers")
-	case Ptr, UnsafePointer, Chan, Func, Map:
+	case Ptr, Ref, UnsafePointer, Chan, Func, Map:
 		gc.appendWord(bitsPointer)
 	case Slice:
 		gc.appendWord(bitsPointer)
@@ -1956,7 +1959,7 @@ func addTypeBits(bv *bitVector, offset *uintptr, t *rtype) {
 	}
 
 	switch Kind(t.kind & kindMask) {
-	case Chan, Func, Map, Ptr, Slice, String, UnsafePointer:
+	case Chan, Func, Map, Ptr, Ref, Slice, String, UnsafePointer:
 		// 1 pointer at start of representation
 		for bv.n < 2*uint32(*offset/uintptr(ptrSize)) {
 			bv.append2(bitsScalar)

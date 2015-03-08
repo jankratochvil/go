@@ -31,6 +31,7 @@ const (
 	_KindString
 	_KindStruct
 	_KindUnsafePointer
+	_KindRef
 
 	_KindDirectIface = 1 << 5
 	_KindGCProg      = 1 << 6 // Type.gc points to GC program

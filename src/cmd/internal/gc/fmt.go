@@ -559,14 +559,23 @@ func typefmt(t *Type, flag int) string {
 
 	switch t.Etype {
 	case TPTR32,
-		TREF32,
-		TPTR64,
-		TREF64:
+		TPTR64:
 		if fmtmode == FTypeId && (flag&obj.FmtShort != 0 /*untyped*/) {
 			fp += fmt.Sprintf("*%v", Tconv(t.Type, obj.FmtShort))
 			return fp
 		}
 		fp += fmt.Sprintf("*%v", Tconv(t.Type, 0))
+		return fp
+	case TREF32,
+		TREF64:
+		if fmtmode == FTypeId && (flag&obj.FmtShort != 0 /*untyped*/) {
+			// type.&main.Package: main.(&Package).copyBuild: not defined
+			fp += fmt.Sprintf("&%v", Tconv(t.Type, obj.FmtShort))
+			return fp
+		}
+		// panic: runtime error: index out of range
+		// pkg/bootstrap/src/bootstrap/internal/ld/dwarf.go:1127 +0x1955
+		fp += fmt.Sprintf("&%v", Tconv(t.Type, 0))
 		return fp
 
 	case TARRAY:

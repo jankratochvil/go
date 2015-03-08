@@ -31,6 +31,7 @@ const (
 	kindString        = _KindString
 	kindStruct        = _KindStruct
 	kindUnsafePointer = _KindUnsafePointer
+	kindRef           = _KindRef
 
 	kindDirectIface = _KindDirectIface
 	kindGCProg      = _KindGCProg
